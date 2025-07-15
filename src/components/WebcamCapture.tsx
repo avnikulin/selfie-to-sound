@@ -17,6 +17,7 @@ export default function WebcamCapture({ onPhotoCapture, isDisabled = false }: We
   const [error, setError] = useState<string | null>(null);
   const [hasPhoto, setHasPhoto] = useState(false);
   const [debugInfo, setDebugInfo] = useState<string[]>([]);
+  const [showDebug, setShowDebug] = useState(false);
 
   // Debug logging function
   const addDebugLog = (message: string) => {
@@ -210,44 +211,60 @@ export default function WebcamCapture({ onPhotoCapture, isDisabled = false }: We
       )}
 
       {/* Controls */}
-      <div className="flex justify-center space-x-4">
-        {!hasPhoto ? (
-          <>
-            <button
-              onClick={takePhoto}
-              disabled={isDisabled || isLoading || !stream || !!error}
-              className="flex items-center space-x-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-            >
-              <Camera className="w-5 h-5" />
-              <span>📸 Capture Photo</span>
-            </button>
-            <button
-              onClick={stopCamera}
-              disabled={isDisabled || !stream}
-              className="flex items-center space-x-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-            >
-              <StopCircle className="w-5 h-5" />
-              <span>🛑 Stop Camera</span>
-            </button>
-          </>
-        ) : (
-          <>
-            <button
-              onClick={retakePhoto}
-              className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-            >
-              <Camera className="w-5 h-5" />
-              <span>🔄 Retake</span>
-            </button>
-          </>
-        )}
+      <div className="space-y-3">
+        <div className="flex justify-center space-x-4">
+          {!hasPhoto ? (
+            <>
+              <button
+                onClick={takePhoto}
+                disabled={isDisabled || isLoading || !stream || !!error}
+                className="flex items-center space-x-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+              >
+                <Camera className="w-5 h-5" />
+                <span>📸 Capture Photo</span>
+              </button>
+              <button
+                onClick={stopCamera}
+                disabled={isDisabled || !stream}
+                className="flex items-center space-x-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+              >
+                <StopCircle className="w-5 h-5" />
+                <span>🛑 Stop Camera</span>
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={retakePhoto}
+                className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+              >
+                <Camera className="w-5 h-5" />
+                <span>🔄 Retake</span>
+              </button>
+            </>
+          )}
+        </div>
+        
+        {/* Debug Toggle */}
+        <div className="flex justify-center">
+          <button
+            onClick={() => setShowDebug(!showDebug)}
+            className="flex items-center space-x-2 text-xs text-gray-500 hover:text-gray-700 transition-colors"
+          >
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span>{showDebug ? 'Hide Debug' : 'Show Debug'}</span>
+          </button>
+        </div>
       </div>
 
       {/* Hidden canvas for photo capture */}
       <canvas ref={canvasRef} style={{ display: 'none' }} />
 
       {/* Debug information */}
-      {debugInfo.length > 0 && (
+      {showDebug && debugInfo.length > 0 && (
         <div className="bg-gray-100 rounded-lg p-4 space-y-1">
           <h4 className="text-sm font-medium text-gray-700">Debug Log:</h4>
           {debugInfo.map((log, index) => (
